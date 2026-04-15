@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 export default function Navbar() {
   return (
@@ -12,6 +12,9 @@ export default function Navbar() {
           </a>
           <a href="#projects" className="hover:text-blue-400">
             Projects
+          </a>
+          <a href="#skills" className="hover:text-blue-400">
+            Skills
           </a>
           <a href="#contact" className="hover:text-blue-400">
             Contact
