@@ -1,29 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function Navbar() {
-  return (
-    <div>
-      <nav className="flex justify-between items-center px-8 py-4 bg-gray-800 shadow-md sticky top-0">
-        <h1 className="text-xl font-bold text-blue-400">Nivetha</h1>
+  const [isOpen, setIsOpen] = useState(false);
 
-        <div className="space-x-6">
-          <a href="#about" className="hover:text-blue-400">
-            About
-          </a>
-          <a href="#projects" className="hover:text-blue-400">
-            Projects
-          </a>
-          <a href="#skills" className="hover:text-blue-400">
-            Skills
-          </a>
-          <a href="#education" className="hover:text-blue-400">
-            Education
-          </a>
-          <a href="#contact" className="hover:text-blue-400">
-            Contact
-          </a>
+  const navLinks = [
+    { name: "About", href: "#about" },
+    { name: "Projects", href: "#projects" },
+    { name: "Skills", href: "#skills" },
+    { name: "Education", href: "#education" },
+    { name: "Contact", href: "#contact" },
+  ];
+
+  return (
+    <nav className="sticky top-0 z-50 bg-gray-900 text-white shadow-md">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        {/* Logo */}
+        <h1 className="text-2xl font-bold text-blue-400">Nivetha</h1>
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex space-x-8">
+          {navLinks.map((link) => (
+            <a
+              key={link.name}
+              href={link.href}
+              className="hover:text-blue-400 transition duration-300"
+            >
+              {link.name}
+            </a>
+          ))}
         </div>
-      </nav>
-    </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-3xl"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? "✕" : "☰"}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-gray-800 px-6 py-4">
+          <div className="flex flex-col space-y-4">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className="hover:text-blue-400 transition duration-300"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </nav>
   );
 }
