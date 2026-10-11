@@ -8,8 +8,8 @@ export const PROFILE = {
   linkedin: "https://www.linkedin.com/in/nivetha0305/",
 };
 
-export const RESUME_HREF = "/Nivetha_PK_Resume.pdf";
-export const RESUME_FILENAME = "Nivetha_PK_Resume.pdf";
+export const RESUME_HREF = "/26MCR069_Nivetha P K.pdf";
+export const RESUME_FILENAME = "26MCR069_Nivetha P K.pdf";
 
 export const NAV_LINKS = [
   { name: "Home", href: "#home" },
