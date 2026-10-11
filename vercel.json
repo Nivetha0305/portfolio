@@ -1,0 +1,17 @@
+{
+  "headers": [
+    {
+      "source": "/Nivetha_PK_Resume.pdf",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/pdf"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "inline; filename=\"Nivetha_PK_Resume.pdf\""
+        }
+      ]
+    }
+  ]
+}

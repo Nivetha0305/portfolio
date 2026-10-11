@@ -1,120 +1,129 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaArrowRight, FaEnvelope, FaCompass } from "react-icons/fa";
+import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { TypeAnimation } from "react-type-animation";
+import { FaArrowRight, FaChevronDown, FaDownload } from "react-icons/fa";
+import { PROFILE } from "../data";
+import ResumeLink from "./ResumeLink";
 
 export default function Hero() {
-  const rotatingLines = [
-    "MCA Student at Kongu Engineering College",
-    "Aspiring Customer Support Professional",
-    "Interested in Technical Support",
-    "Computer Science Graduate",
-    "Always Learning and Improving",
-  ];
+  const reduceMotion = useReducedMotion();
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % rotatingLines.length);
-    }, 3200);
-    return () => clearInterval(timer);
-  }, [rotatingLines.length]);
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: reduceMotion ? 0 : 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.55, delay },
+  });
 
   return (
     <section
-      id="hero"
-      className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 px-6 overflow-hidden bg-navy-900 bg-radial-gradient bg-grid-pattern"
+      id="home"
+      className="relative flex min-h-[100svh] items-center overflow-hidden px-4 pb-16 pt-28 sm:px-6"
     >
-      {/* Decorative ambient gradient glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-accent-blue/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-1/3 right-1/4 w-[350px] h-[250px] bg-accent-cyan/10 blur-[100px] rounded-full pointer-events-none" />
-
-      <div className="relative max-w-4xl mx-auto text-center z-10">
-        {/* Status Badge */}
+      {/* Animated background glows */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass-panel border-accent-cyan/20 text-accent-cyan text-xs font-semibold tracking-wide shadow-md mb-8"
-        >
-          <span className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse" />
-          <span>Kongu Engineering College • 1st Year MCA</span>
-        </motion.div>
+          animate={
+            reduceMotion
+              ? undefined
+              : { x: [0, 30, 0], y: [0, -20, 0], opacity: [0.35, 0.5, 0.35] }
+          }
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-1/2 top-1/4 h-72 w-72 -translate-x-[90%] rounded-full bg-cyan-500/20 blur-3xl sm:h-96 sm:w-96"
+        />
+        <motion.div
+          animate={
+            reduceMotion
+              ? undefined
+              : { x: [0, -30, 0], y: [0, 25, 0], opacity: [0.3, 0.45, 0.3] }
+          }
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-1/2 top-1/3 h-72 w-72 translate-x-[10%] rounded-full bg-sky-500/20 blur-3xl sm:h-96 sm:w-96"
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,#050A14_100%)]" />
+      </div>
 
-        {/* Main Heading */}
-        <motion.h1
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-light leading-[1.15]"
-        >
-          Hi, I'm <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-cyan-300 to-accent-cyan">Nivetha P K</span>
-        </motion.h1>
-
-        {/* Subheading */}
-        <motion.h2
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-4 text-xl sm:text-2xl font-semibold text-slate-300 tracking-tight"
-        >
-          MCA Student | Aspiring Customer Support Professional
-        </motion.h2>
-
-        {/* Rotating Animated Text Banner */}
-        <div className="h-10 mt-3 flex items-center justify-center overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -14 }}
-              transition={{ duration: 0.35, ease: "easeInOut" }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm md:text-base font-medium text-accent-cyan bg-accent-cyan/10 border border-accent-cyan/20"
-            >
-              <FaCompass className="text-xs text-accent-cyan" />
-              <span>{rotatingLines[currentIndex]}</span>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Introduction Paragraph */}
+      <div className="relative z-10 mx-auto w-full max-w-4xl text-center">
         <motion.p
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="mt-6 text-slate-muted text-base sm:text-lg max-w-2xl mx-auto leading-relaxed font-normal"
+          {...fadeUp(0)}
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-cyan-300"
         >
-          "I'm currently pursuing my Master of Computer Applications at Kongu Engineering College. 
-          With a background in Computer Science, I am interested in customer support and technical support 
-          opportunities where I can use my problem-solving abilities, technical knowledge, and willingness 
-          to learn to help people and provide a positive customer experience."
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400" />
+          </span>
+          Available for web development work
         </motion.p>
 
-        {/* Call to Action Buttons */}
+        <motion.h1
+          {...fadeUp(0.08)}
+          className="bg-gradient-to-r from-slate-50 via-cyan-200 to-sky-300 bg-clip-text text-[clamp(2.1rem,6vw,4.5rem)] font-extrabold leading-tight tracking-tight text-transparent"
+        >
+          {PROFILE.name}
+        </motion.h1>
+
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          {...fadeUp(0.16)}
+          className="mt-3 text-[clamp(1.25rem,3.4vw,2rem)] font-semibold text-cyan-300"
+        >
+          <TypeAnimation
+            sequence={["Web Developer", 3000]}
+            wrapper="span"
+            cursor
+            repeat={Infinity}
+            aria-label="Web Developer"
+          />
+        </motion.div>
+
+        <motion.p
+          {...fadeUp(0.24)}
+          className="mx-auto mt-5 max-w-2xl text-[clamp(0.95rem,2.2vw,1.125rem)] leading-relaxed text-slate-400"
+        >
+          I design and build clean, responsive websites with React, focusing on
+          performance, accessibility, and a polished user experience.
+        </motion.p>
+
+        <motion.p
+          {...fadeUp(0.3)}
+          className="mt-3 text-sm font-medium text-slate-500 sm:text-base"
+        >
+          MCA Student, Kongu Engineering College
+        </motion.p>
+
+        <motion.div
+          {...fadeUp(0.36)}
+          className="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
         >
           <a
-            href="#about"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-accent-blue to-cyan-500 text-navy-950 font-bold text-sm tracking-wide shadow-lg shadow-accent-blue/20 hover:shadow-accent-blue/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            href="#projects"
+            className="btn-glow inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition-transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200"
           >
-            <span>View My Profile</span>
-            <FaArrowRight className="text-xs" />
+            View Projects
+            <FaArrowRight className="text-xs" aria-hidden="true" />
           </a>
-
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl glass-panel text-slate-light font-semibold text-sm hover:border-accent-cyan/40 hover:text-accent-cyan hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-sm"
-          >
-            <FaEnvelope className="text-xs" />
-            <span>Contact Me</span>
-          </a>
+          <ResumeLink className="btn-glow inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-slate-100 backdrop-blur-sm transition-transform hover:-translate-y-0.5 hover:border-cyan-400/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">
+            <FaDownload className="text-xs" aria-hidden="true" />
+            Download Resume
+          </ResumeLink>
         </motion.div>
       </div>
+
+      {/* Scroll indicator */}
+      <motion.a
+        href="#about"
+        aria-label="Scroll to About section"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-slate-500 hover:text-cyan-300 sm:block"
+      >
+        <motion.span
+          animate={reduceMotion ? undefined : { y: [0, 8, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity }}
+          className="block"
+        >
+          <FaChevronDown aria-hidden="true" />
+        </motion.span>
+      </motion.a>
     </section>
   );
 }

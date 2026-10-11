@@ -1,341 +1,253 @@
 import React, { useRef, useState } from "react";
-import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import {
+  FaCheckCircle,
   FaEnvelope,
+  FaExclamationCircle,
   FaGithub,
   FaLinkedin,
   FaPaperPlane,
-  FaCheckCircle,
-  FaExclamationCircle,
-  FaMapMarkerAlt,
 } from "react-icons/fa";
+import { PROFILE } from "../data";
+import Section from "./Section";
 
 export default function Contact() {
   const form = useRef();
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "",
     message: "",
   });
-
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState({ state: "idle", message: "" });
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-    if (errors[e.target.name]) {
-      setErrors({
-        ...errors,
-        [e.target.name]: "",
-      });
-    }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const validate = () => {
-    let newErrors = {};
+    const next = {};
     const nameRegex = /^[A-Za-z\s.'-]+$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Please enter your name";
-    } else if (!nameRegex.test(formData.name.trim())) {
-      newErrors.name = "Please enter a valid name (letters and spaces only)";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Please enter your email address";
-    } else if (!emailRegex.test(formData.email.trim())) {
-      newErrors.email = "Please enter a valid email address (e.g. name@domain.com)";
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = "Please write a brief message";
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = "Message should be at least 10 characters";
-    }
-
-    return newErrors;
+    if (!formData.name.trim()) next.name = "Please enter your name";
+    else if (!nameRegex.test(formData.name.trim()))
+      next.name = "Please enter a valid name";
+    if (!formData.email.trim()) next.email = "Please enter your email";
+    else if (!emailRegex.test(formData.email.trim()))
+      next.email = "Enter a valid email address";
+    if (!formData.message.trim()) next.message = "Please write a message";
+    else if (formData.message.trim().length < 10)
+      next.message = "Message should be at least 10 characters";
+    return next;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate();
-
-    if (Object.keys(validationErrors).length > 0) {
+    if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
       return;
     }
 
-    setStatus({ state: "sending", message: "Sending your message..." });
-
-    // Send using verified EmailJS service config
+    setStatus({ state: "sending", message: "Sending..." });
     emailjs
       .sendForm(
         "service_wzf7a07",
         "template_shls4lu",
         form.current,
-        "bVCcD9JpmTBe3xucH"
+        "bVCcD9JpmTBe3xucH",
       )
       .then(() => {
         setStatus({
           state: "success",
-          message: "Thank you! Your message was sent successfully. I will get back to you shortly.",
+          message: "Thank you. Your message was sent successfully.",
         });
-        setFormData({
-          name: "",
-          email: "",
-          subject: "",
-          message: "",
-        });
+        setFormData({ name: "", email: "", message: "" });
         setErrors({});
       })
-      .catch((error) => {
-        console.error("Email send failed:", error);
+      .catch(() => {
         setStatus({
           state: "error",
-          message:
-            "Unable to deliver message right now. Please reach out directly to nivethapk531@gmail.com.",
+          message: `Unable to send right now. Please email ${PROFILE.email} instead.`,
         });
       });
   };
 
+  const fieldClass = (hasError) =>
+    `w-full min-h-12 rounded-xl border bg-[#0B1220] px-4 py-3 text-sm text-slate-100 outline-none transition ${
+      hasError
+        ? "border-red-500/80"
+        : "border-white/10 focus:border-cyan-400/70"
+    }`;
+
   return (
-    <section id="contact" className="py-24 bg-navy-950 relative border-t border-white/5">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid lg:grid-cols-12 gap-12 items-start">
-          {/* Left Column: Direct Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="lg:col-span-5 space-y-8"
+    <Section
+      id="contact"
+      ariaLabelledby="contact-heading"
+      className="relative z-10 border-t border-white/5 px-4 py-20 sm:px-6 sm:py-24"
+    >
+      <div className="mx-auto grid w-full max-w-6xl gap-10 lg:grid-cols-12">
+        <div className="lg:col-span-5">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+            Contact
+          </p>
+          <h2
+            id="contact-heading"
+            className="text-[clamp(1.6rem,3.5vw,2.4rem)] font-bold tracking-tight text-slate-50"
           >
-            <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent-cyan/10 border border-accent-cyan/20 text-accent-cyan text-xs font-semibold tracking-wider uppercase mb-4">
-                Get In Touch
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-light tracking-tight">
-                Let's Connect for Opportunities
-              </h2>
-              <p className="mt-4 text-slate-muted text-base leading-relaxed">
-                "I'm open to exploring entry-level customer support, technical support, 
-                and IT fresher opportunities where I can learn, contribute, and grow professionally."
-              </p>
-            </div>
+            Let’s build something together
+          </h2>
+          <p className="mt-4 text-slate-400">
+            Have a project, collaboration, or question? Send a message or reach
+            me on email, LinkedIn, or GitHub.
+          </p>
 
+          <div className="mt-8 space-y-3">
+            <a
+              href={`mailto:${PROFILE.email}`}
+              className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 hover:border-cyan-400/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
+            >
+              <FaEnvelope className="text-cyan-300" aria-hidden="true" />
+              <span className="text-sm text-slate-200">{PROFILE.email}</span>
+            </a>
+            <a
+              href={PROFILE.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 hover:border-cyan-400/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
+            >
+              <FaLinkedin className="text-cyan-300" aria-hidden="true" />
+              <span className="text-sm text-slate-200">LinkedIn</span>
+            </a>
+            <a
+              href={PROFILE.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 hover:border-cyan-400/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
+            >
+              <FaGithub className="text-cyan-300" aria-hidden="true" />
+              <span className="text-sm text-slate-200">GitHub</span>
+            </a>
+          </div>
+        </div>
+
+        <div className="lg:col-span-7">
+          <form
+            ref={form}
+            onSubmit={handleSubmit}
+            className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-xl sm:p-8"
+            noValidate
+          >
             <div className="space-y-4">
-              {/* Direct Email Card */}
+              <div>
+                <label
+                  htmlFor="contact-name"
+                  className="mb-1.5 block text-xs font-semibold text-slate-300"
+                >
+                  Name
+                </label>
+                <input
+                  id="contact-name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className={fieldClass(errors.name)}
+                />
+                {errors.name && (
+                  <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400">
+                    <FaExclamationCircle aria-hidden="true" />
+                    {errors.name}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="contact-email"
+                  className="mb-1.5 block text-xs font-semibold text-slate-300"
+                >
+                  Email
+                </label>
+                <input
+                  id="contact-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={fieldClass(errors.email)}
+                />
+                {errors.email && (
+                  <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400">
+                    <FaExclamationCircle aria-hidden="true" />
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="contact-message"
+                  className="mb-1.5 block text-xs font-semibold text-slate-300"
+                >
+                  Message
+                </label>
+                <textarea
+                  id="contact-message"
+                  name="message"
+                  rows="5"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className={`${fieldClass(errors.message)} min-h-[8rem] resize-y`}
+                />
+                {errors.message && (
+                  <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400">
+                    <FaExclamationCircle aria-hidden="true" />
+                    {errors.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {status.state === "success" && (
+              <p className="mt-4 flex items-start gap-2 rounded-xl border border-green-500/30 bg-green-500/10 p-3 text-sm text-green-300">
+                <FaCheckCircle className="mt-0.5 shrink-0" aria-hidden="true" />
+                {status.message}
+              </p>
+            )}
+            {status.state === "error" && (
+              <p className="mt-4 flex items-start gap-2 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+                <FaExclamationCircle
+                  className="mt-0.5 shrink-0"
+                  aria-hidden="true"
+                />
+                {status.message}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={status.state === "sending"}
+              className="btn-glow mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-400 to-cyan-400 px-6 text-sm font-semibold text-slate-950 disabled:opacity-60"
+            >
+              <FaPaperPlane aria-hidden="true" />
+              {status.state === "sending" ? "Sending..." : "Send Message"}
+            </button>
+
+            <p className="mt-4 text-center text-xs text-slate-500">
+              Or email me at{" "}
               <a
-                href="mailto:nivethapk531@gmail.com"
-                className="glass-panel p-4 rounded-2xl flex items-center gap-4 hover:border-accent-cyan/40 transition-all duration-300 group"
+                href={`mailto:${PROFILE.email}`}
+                className="text-cyan-300 underline-offset-2 hover:underline"
               >
-                <div className="w-12 h-12 rounded-xl bg-accent-blue/15 border border-accent-blue/30 flex items-center justify-center text-accent-blue text-lg group-hover:scale-110 group-hover:bg-accent-blue group-hover:text-navy-950 transition-all duration-300">
-                  <FaEnvelope />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Direct Email
-                  </p>
-                  <p className="text-slate-light font-medium text-sm group-hover:text-accent-cyan transition-colors">
-                    nivethapk531@gmail.com
-                  </p>
-                </div>
+                {PROFILE.email}
               </a>
-
-              {/* Institution / Location */}
-              <div className="glass-panel p-4 rounded-2xl flex items-center gap-4 border-white/5">
-                <div className="w-12 h-12 rounded-xl bg-navy-800 border border-white/10 flex items-center justify-center text-accent-cyan text-lg">
-                  <FaMapMarkerAlt />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Location & Campus
-                  </p>
-                  <p className="text-slate-light font-medium text-sm">
-                    Kongu Engineering College, Perundurai, Erode, Tamil Nadu
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Verified Profiles */}
-            <div className="pt-2">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                Verified Online Profiles
-              </p>
-              <div className="flex gap-3">
-                <a
-                  href="https://github.com/Nivetha0305"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl glass-panel text-slate-300 hover:text-white hover:border-accent-cyan/40 text-xs font-semibold transition-all duration-200"
-                >
-                  <FaGithub size={16} />
-                  <span>GitHub Profile</span>
-                </a>
-
-                <a
-                  href="https://www.linkedin.com/in/nivetha0305/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl glass-panel text-slate-300 hover:text-accent-blue hover:border-accent-blue/40 text-xs font-semibold transition-all duration-200"
-                >
-                  <FaLinkedin size={16} />
-                  <span>LinkedIn Profile</span>
-                </a>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right Column: Contact Message Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-7"
-          >
-            <div className="glass-panel p-7 sm:p-8 rounded-2xl border border-white/10 shadow-2xl">
-              <h3 className="text-xl font-bold text-slate-light mb-2">
-                Send a Message
-              </h3>
-              <p className="text-xs text-slate-400 mb-6">
-                Recruiters and hiring managers can reach out directly via this form or by emailing me directly.
-              </p>
-
-              <form ref={form} onSubmit={handleSubmit} className="space-y-4">
-                {/* Name Field */}
-                <div>
-                  <label htmlFor="contact-name" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Your Name <span className="text-accent-cyan">*</span>
-                  </label>
-                  <input
-                    id="contact-name"
-                    type="text"
-                    name="name"
-                    placeholder="e.g. Jane Doe"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-navy-900 text-slate-light text-sm outline-none transition-colors border ${
-                      errors.name
-                        ? "border-red-500/80 focus:border-red-500"
-                        : "border-white/10 focus:border-accent-cyan/60"
-                    }`}
-                  />
-                  {errors.name && (
-                    <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
-                      <FaExclamationCircle className="text-[11px]" />
-                      <span>{errors.name}</span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Email Field */}
-                <div>
-                  <label htmlFor="contact-email" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Your Email Address <span className="text-accent-cyan">*</span>
-                  </label>
-                  <input
-                    id="contact-email"
-                    type="email"
-                    name="email"
-                    placeholder="e.g. recruiter@company.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-navy-900 text-slate-light text-sm outline-none transition-colors border ${
-                      errors.email
-                        ? "border-red-500/80 focus:border-red-500"
-                        : "border-white/10 focus:border-accent-cyan/60"
-                    }`}
-                  />
-                  {errors.email && (
-                    <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
-                      <FaExclamationCircle className="text-[11px]" />
-                      <span>{errors.email}</span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Subject Field */}
-                <div>
-                  <label htmlFor="contact-subject" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Subject / Opportunity (Optional)
-                  </label>
-                  <input
-                    id="contact-subject"
-                    type="text"
-                    name="subject"
-                    placeholder="e.g. Customer Support Associate Opportunity"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-navy-900 text-slate-light text-sm outline-none transition-colors border border-white/10 focus:border-accent-cyan/60"
-                  />
-                </div>
-
-                {/* Message Field */}
-                <div>
-                  <label htmlFor="contact-message" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Message <span className="text-accent-cyan">*</span>
-                  </label>
-                  <textarea
-                    id="contact-message"
-                    rows="4"
-                    name="message"
-                    placeholder="Share role details, requirements, or inquiry..."
-                    value={formData.message}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-navy-900 text-slate-light text-sm outline-none transition-colors resize-none border ${
-                      errors.message
-                        ? "border-red-500/80 focus:border-red-500"
-                        : "border-white/10 focus:border-accent-cyan/60"
-                    }`}
-                  />
-                  {errors.message && (
-                    <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
-                      <FaExclamationCircle className="text-[11px]" />
-                      <span>{errors.message}</span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Form Notification Messages */}
-                {status.state === "success" && (
-                  <div className="p-3.5 rounded-xl bg-green-500/10 border border-green-500/30 text-green-300 text-xs flex items-start gap-2">
-                    <FaCheckCircle className="text-sm mt-0.5 flex-shrink-0" />
-                    <span>{status.message}</span>
-                  </div>
-                )}
-
-                {status.state === "error" && (
-                  <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-start gap-2">
-                    <FaExclamationCircle className="text-sm mt-0.5 flex-shrink-0" />
-                    <span>{status.message}</span>
-                  </div>
-                )}
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={status.state === "sending"}
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-accent-blue to-accent-cyan text-navy-950 font-bold text-sm hover:opacity-95 active:scale-[0.99] transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-accent-blue/20"
-                >
-                  <FaPaperPlane className="text-xs" />
-                  <span>
-                    {status.state === "sending" ? "Transmitting..." : "Send Message"}
-                  </span>
-                </button>
-              </form>
-            </div>
-          </motion.div>
+            </p>
+          </form>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

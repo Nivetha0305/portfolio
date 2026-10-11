@@ -1,130 +1,133 @@
-import React, { useState, useEffect } from "react";
-import { FaBars, FaTimes, FaEnvelope } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaBars, FaDownload, FaTimes } from "react-icons/fa";
+import { PROFILE, RESUME_FILENAME, RESUME_HREF } from "../data";
+
+const links = [
+  { label: "Home", id: "home" },
+  { label: "About", id: "about" },
+  { label: "Skills", id: "skills" },
+  { label: "Projects", id: "projects" },
+  { label: "Education", id: "education" },
+  { label: "Contact", id: "contact" },
+];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("home");
   const [scrolled, setScrolled] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalScroll > 0) {
-        setScrollProgress((window.scrollY / totalScroll) * 100);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinks = [
-    { name: "About", href: "#about" },
-    { name: "Roles", href: "#career-interests" },
-    { name: "Skills", href: "#skills" },
-    { name: "Education", href: "#education" },
-    { name: "Projects", href: "#projects" },
-    { name: "Strengths", href: "#strengths" },
-    { name: "Contact", href: "#contact" },
-  ];
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-40% 0px -55% 0px" },
+    );
+    links.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const linkClass = (id) =>
+    `rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 ${
+      active === id ? "text-cyan-300" : "text-slate-300 hover:text-white"
+    }`;
+
+  const resumeBtn =
+    "inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-400 to-cyan-400 px-4 text-sm font-semibold text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-200";
 
   return (
-    <>
-      {/* Scroll Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 h-[3px] z-[60] bg-transparent">
-        <div
-          className="h-full bg-gradient-to-r from-accent-blue via-accent-cyan to-blue-400 transition-all duration-100 ease-out"
-          style={{ width: `${scrollProgress}%` }}
-        />
-      </div>
-
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-navy-950/85 backdrop-blur-md border-b border-white/10 shadow-lg py-3.5"
-            : "bg-transparent py-5"
-        }`}
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all ${
+        scrolled
+          ? "border-b border-white/10 bg-[#050A14]/85 backdrop-blur-md"
+          : "bg-transparent"
+      }`}
+    >
+      <nav
+        className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6"
+        aria-label="Main navigation"
       >
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          {/* Brand Logo */}
-          <a
-            href="#hero"
-            className="flex items-center gap-2 group text-decoration-none"
-          >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-accent-blue to-accent-cyan flex items-center justify-center font-bold text-navy-950 shadow-md group-hover:scale-105 transition-transform duration-300">
-              N
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-base tracking-tight text-slate-light group-hover:text-accent-cyan transition-colors">
-                Nivetha P K
-              </span>
-              <span className="text-[11px] text-slate-muted tracking-wide font-medium">
-                MCA Student
-              </span>
-            </div>
-          </a>
+        <a
+          href="#home"
+          className="text-base font-bold tracking-tight text-slate-50"
+        >
+          {PROFILE.name}
+        </a>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
-            {navLinks.map((link) => (
+        <ul className="hidden items-center gap-1 lg:flex">
+          {links.map((l) => (
+            <li key={l.id}>
               <a
-                key={link.name}
-                href={link.href}
-                className="relative px-3.5 py-2 text-sm font-medium text-slate-muted hover:text-slate-light transition-colors group"
+                href={`#${l.id}`}
+                className={linkClass(l.id)}
+                aria-current={active === l.id ? "page" : undefined}
               >
-                {link.name}
-                <span className="absolute bottom-1 left-3.5 right-3.5 h-[2px] bg-accent-cyan scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                {l.label}
               </a>
-            ))}
+            </li>
+          ))}
+        </ul>
 
-            <a
-              href="mailto:nivethapk531@gmail.com"
-              className="ml-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-blue/10 border border-accent-blue/30 text-accent-blue hover:bg-accent-blue hover:text-navy-950 text-sm font-semibold transition-all duration-300 shadow-sm"
-            >
-              <FaEnvelope className="text-xs" />
-              <span>Get in Touch</span>
-            </a>
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <button
-            type="button"
-            aria-label="Toggle navigation menu"
-            className="md:hidden p-2.5 rounded-lg text-slate-muted hover:text-slate-light hover:bg-white/5 transition-colors focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
+        <div className="hidden lg:block">
+          <a
+            href={RESUME_HREF}
+            download={RESUME_FILENAME}
+            className={resumeBtn}
           >
-            {isOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
-          </button>
+            <FaDownload aria-hidden="true" />
+            Download Resume
+          </a>
         </div>
 
-        {/* Mobile Dropdown Menu */}
-        {isOpen && (
-          <div className="md:hidden bg-navy-900/95 backdrop-blur-xl border-b border-white/10 px-6 py-5 shadow-2xl transition-all">
-            <div className="flex flex-col space-y-3">
-              {navLinks.map((link) => (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-100 lg:hidden"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+        >
+          {open ? <FaTimes /> : <FaBars />}
+        </button>
+      </nav>
+
+      {open && (
+        <div className="border-t border-white/10 bg-[#050A14]/95 px-4 pb-5 pt-3 backdrop-blur-md lg:hidden">
+          <ul className="flex flex-col gap-1">
+            {links.map((l) => (
+              <li key={l.id}>
                 <a
-                  key={link.name}
-                  href={link.href}
-                  className="px-3 py-2 rounded-lg text-base font-medium text-slate-300 hover:text-accent-cyan hover:bg-white/5 transition-colors"
-                  onClick={() => setIsOpen(false)}
+                  href={`#${l.id}`}
+                  onClick={() => setOpen(false)}
+                  className={`block ${linkClass(l.id)}`}
                 >
-                  {link.name}
+                  {l.label}
                 </a>
-              ))}
-              <div className="pt-3 border-t border-white/10">
-                <a
-                  href="mailto:nivethapk531@gmail.com"
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent-blue text-navy-950 font-bold text-sm shadow-md"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <FaEnvelope />
-                  <span>Email nivethapk531@gmail.com</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        )}
-      </header>
-    </>
+              </li>
+            ))}
+          </ul>
+          <a
+            href={RESUME_HREF}
+            download={RESUME_FILENAME}
+            onClick={() => setOpen(false)}
+            className={`${resumeBtn} mt-4 w-full`}
+          >
+            <FaDownload aria-hidden="true" />
+            Download Resume
+          </a>
+        </div>
+      )}
+    </header>
   );
 }
